@@ -1,125 +1,67 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
- <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2907/2907253.png">
-<meta name="theme-color" content="#4facfe">
- <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLE7 Rock Cloud - Full Edition</title>
+    <title>PLE7 Rock Cloud</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        :root { 
-            --accent: #00a8ff; 
-            --glass: rgba(255, 255, 255, 0.35);
-            --bg: radial-gradient(circle at top left, #4facfe 0%, #00f2fe 100%);
-        }
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg); background-attachment: fixed;
-            margin: 0; padding: 20px; display: flex; justify-content: center; color: #003366;
-        }
-        .container { 
-            width: 100%; max-width: 900px; 
-            background: var(--glass); backdrop-filter: blur(20px);
-            border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-        }
-        .btn { 
-            background: linear-gradient(to bottom, #ffffff 0%, #cedbe9 100%);
-            color: #003366; border: 1px solid #707070; padding: 10px 20px; 
-            border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s;
-        }
-        .btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0,168,255,0.3); }
+        :root { --glass: rgba(255, 255, 255, 0.35); --bg: radial-gradient(circle at top left, #4facfe 0%, #00f2fe 100%); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); background-attachment: fixed; margin: 0; padding: 20px; display: flex; justify-content: center; color: #003366; }
+        .container { width: 100%; max-width: 900px; background: var(--glass); backdrop-filter: blur(20px); border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.4); padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .btn { background: linear-gradient(to bottom, #ffffff 0%, #cedbe9 100%); color: #003366; border: 1px solid #707070; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; margin: 5px; }
         .btn-main { background: linear-gradient(to bottom, #87e8fb 0%, #1ea1d7 100%); color: white; border-color: #1e70a1; }
-        
         .hidden { display: none !important; }
         input, textarea { width: 100%; background: rgba(255,255,255,0.8); border: 1px solid #ccc; padding: 10px; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; }
-        
-        .band-card { 
-            background: rgba(255,255,255,0.5); padding: 15px; border-radius: 15px; 
-            margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid white; transition: 0.3s;
-        }
-        .band-card:hover { background: white; }
-
-        /* Вкладки */
+        .band-card { background: rgba(255,255,255,0.5); padding: 15px; border-radius: 15px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid white; }
+        #v-img-main { width: 200px; height: 200px; border-radius: 15px; object-fit: contain; background: #fff; border: 4px solid #fff; }
+        .view-area { background: rgba(255,255,255,0.6); padding: 20px; border-radius: 20px; line-height: 1.6; white-space: pre-wrap; }
         .tabs { display: flex; gap: 5px; margin: 20px 0; }
-        .tab { padding: 10px 20px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 10px 10px 0 0; border: 1px solid rgba(255,255,255,0.2); }
-        .tab.active { background: white; font-weight: bold; border-bottom: none; }
-
-        .header-flex { display: flex; gap: 20px; align-items: center; margin-bottom: 20px; }
-        #v-img-main { width: 200px; height: 200px; border-radius: 15px; object-fit: contain; background: #fff; border: 4px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .view-area { background: rgba(255,255,255,0.6); padding: 20px; border-radius: 20px; line-height: 1.6; white-space: pre-wrap; min-height: 200px; }
-        
-        .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .gal-card { background: white; padding: 10px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .gal-card img { width: 100%; height: 200px; object-fit: contain; border-radius: 8px; background: #f0f0f0; }
+        .tab { padding: 10px 20px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 10px 10px 0 0; }
+        .tab.active { background: white; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="screen-list">
-        <h1 style="text-align:center; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">🎸 PLE7 ROCK CLOUD</h1>
-        <div style="text-align:center; margin-bottom: 20px;">
-            <button class="btn btn-main" onclick="openNewEditor()">➕ Добавить группу</button>
-        </div>
-        <div id="bands-container">Синхронизация с облаком...</div>
+        <h1 style="text-align:center; color: white;">🎸 PLE7 ROCK CLOUD</h1>
+        <div style="text-align:center;"><button class="btn btn-main" onclick="openNewEditor()">➕ Добавить группу</button></div>
+        <div id="bands-container" style="margin-top:20px;">Загрузка...</div>
     </div>
 
     <div id="screen-view" class="hidden">
-        <div style="display:flex; justify-content: space-between;">
-            <button class="btn" onclick="showScreen('screen-list')">↩ Назад</button>
-            <button class="btn btn-main" id="edit-mode-btn">✏ Править</button>
-        </div>
-        <div class="header-flex">
+        <button class="btn" onclick="showScreen('screen-list')">↩ Назад</button>
+        <div style="display:flex; gap:20px; align-items:center; margin-top:20px;">
             <img id="v-img-main">
-            <div style="flex:1">
-                <h1 id="v-name" style="margin:0; color:#004488;"></h1>
-                <p id="v-year" style="font-weight:bold;"></p>
-                <audio id="v-audio" controls style="width:100%"></audio>
-            </div>
+            <div style="flex:1"><h1 id="v-name" style="margin:0;"></h1><p id="v-year"></p><audio id="v-audio" controls style="width:100%"></audio></div>
         </div>
         <div class="tabs">
             <div class="tab active" onclick="switchTab('v-bio', this)">История</div>
             <div class="tab" onclick="switchTab('v-disco', this)">Дискография</div>
-            <div class="tab" onclick="switchTab('v-lyrics', this)">Тексты</div>
-            <div class="tab" onclick="switchTab('v-gal', this)">Галерея</div>
         </div>
         <div id="v-bio" class="view-area tab-content"></div>
         <div id="v-disco" class="view-area tab-content hidden"></div>
-        <div id="v-lyrics" class="view-area tab-content hidden"></div>
-        <div id="v-gal" class="tab-content hidden"><div id="v-gallery-grid" class="gallery-grid"></div></div>
     </div>
 
     <div id="screen-edit" class="hidden">
-        <h2 id="edit-title">Новая запись</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-            <div>
-                <label>Название</label><input type="text" id="e-name">
-                <label>Год/Город</label><input type="text" id="e-year">
-                <label>Главное фото</label><input type="file" onchange="encodeMedia(this, 'img')">
-                <label>Музыка (MP3)</label><input type="file" onchange="encodeMedia(this, 'audio')">
-            </div>
-            <div style="background:rgba(255,255,255,0.2); padding:10px; border-radius:15px;">
-                <label>Галерея (Фото + Описание)</label>
-                <input type="file" onchange="encodeMedia(this, 'g1')"><input type="text" id="e-g1-t" placeholder="Описание 1">
-                <input type="file" onchange="encodeMedia(this, 'g2')"><input type="text" id="e-g2-t" placeholder="Описание 2">
-            </div>
-        </div>
-        <label>История</label><textarea id="e-bio" rows="3"></textarea>
-        <label>Альбомы</label><textarea id="e-disco" rows="2"></textarea>
-        <label>Тексты песен</label><textarea id="e-lyrics" rows="2"></textarea>
-        
-        <button class="btn btn-main" style="width:100%; margin-top:10px;" id="save-btn" onclick="saveData()">☁ СОХРАНИТЬ В ОБЛАКО</button>
-        <button class="btn" style="width:100%; margin-top:5px;" onclick="showScreen('screen-list')">Отмена</button>
+        <h2>Новая запись</h2>
+        <input type="text" id="e-name" placeholder="Название">
+        <input type="text" id="e-year" placeholder="Год">
+        <label>Фото:</label><input type="file" onchange="encodeMedia(this, 'img')">
+        <label>Музыка:</label><input type="file" onchange="encodeMedia(this, 'audio')">
+        <textarea id="e-bio" placeholder="История..."></textarea>
+        <textarea id="e-disco" placeholder="Дискография..."></textarea>
+        <button class="btn btn-main" style="width:100%" id="save-btn" onclick="saveData()">☁ СОХРАНИТЬ В ОБЛАКО</button>
+        <button class="btn" style="width:100%" onclick="showScreen('screen-list')">Отмена</button>
     </div>
 </div>
 
 <script>
+    // ТВОИ КЛЮЧИ ИЗ СКРИНШОТА
     const firebaseConfig = {
         apiKey: "AIzaSyCCMz8l4I6c6TKTiR4jGsmIjrKtyQdWIno",
         authDomain: "ple7-edit-v1.firebaseapp.com",
@@ -132,7 +74,6 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let currentId = null;
     let tempMedia = {};
 
     function loadBands() {
@@ -140,97 +81,51 @@
             const container = document.getElementById('bands-container');
             container.innerHTML = "";
             const data = snap.val();
-            if(!data) { container.innerHTML = "<p style='text-align:center; color:white;'>Облако пусто.</p>"; return; }
             for (let id in data) {
                 let card = document.createElement('div');
                 card.className = 'band-card';
-                card.innerHTML = `<b>${data[id].name}</b> <button class="btn" style="color:red; border:none; background:none;" onclick="deleteBand('${id}', event)">❌</button>`;
-                card.onclick = () => showBand(id, data[id]);
+                card.innerHTML = `<b>${data[id].name}</b> <span>▶</span>`;
+                card.onclick = () => showBand(data[id]);
                 container.appendChild(card);
             }
         });
     }
 
     function encodeMedia(input, key) {
-        const file = input.files[0];
         const reader = new FileReader();
         reader.onloadend = () => tempMedia[key] = reader.result;
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(input.files[0]);
     }
 
     function saveData() {
         const name = document.getElementById('e-name').value;
-        if (!name) return alert("Введите название!");
-        
-        const data = {
-            name: name,
-            year: document.getElementById('e-year').value,
-            bio: document.getElementById('e-bio').value,
-            disco: document.getElementById('e-disco').value,
-            lyrics: document.getElementById('e-lyrics').value,
-            img: tempMedia.img || "",
-            audio: tempMedia.audio || "",
-            g1: tempMedia.g1 || "", g1t: document.getElementById('e-g1-t').value,
-            g2: tempMedia.g2 || "", g2t: document.getElementById('e-g2-t').value
-        };
-
-        const btn = document.getElementById('save-btn');
-        btn.disabled = true;
-
-        const ref = currentId ? db.ref('bands/' + currentId) : db.ref('bands').push();
-        ref.set(data).then(() => {
-            btn.disabled = false;
-            showScreen('screen-list');
-        });
+        if (!name) return alert("Введите имя!");
+        db.ref('bands').push({
+            name: name, year: document.getElementById('e-year').value,
+            bio: document.getElementById('e-bio').value, disco: document.getElementById('e-disco').value,
+            img: tempMedia.img || "", audio: tempMedia.audio || ""
+        }).then(() => showScreen('screen-list'));
     }
 
-    function showBand(id, data) {
-        currentId = id;
-        tempMedia = { img: data.img, audio: data.audio, g1: data.g1, g2: data.g2 };
+    function showBand(data) {
         document.getElementById('v-name').innerText = data.name;
         document.getElementById('v-year').innerText = data.year;
         document.getElementById('v-bio').innerText = data.bio;
         document.getElementById('v-disco').innerText = data.disco;
-        document.getElementById('v-lyrics').innerText = data.lyrics;
         document.getElementById('v-img-main').src = data.img || "";
         document.getElementById('v-audio').src = data.audio || "";
-        
-        const grid = document.getElementById('v-gallery-grid');
-        grid.innerHTML = "";
-        if(data.g1) grid.innerHTML += `<div class="gal-card"><img src="${data.g1}"><p>${data.g1t}</p></div>`;
-        if(data.g2) grid.innerHTML += `<div class="gal-card"><img src="${data.g2}"><p>${data.g2t}</p></div>`;
-
-        document.getElementById('edit-mode-btn').onclick = () => openEditorFor(data);
         showScreen('screen-view');
-    }
-
-    function deleteBand(id, e) {
-        e.stopPropagation();
-        if(confirm("Удалить из облака навсегда?")) db.ref('bands/' + id).remove();
-    }
-
-    function openNewEditor() {
-        currentId = null; tempMedia = {};
-        document.getElementById('edit-title').innerText = "Новая запись";
-        document.querySelectorAll('#screen-edit input, #screen-edit textarea').forEach(i => i.value = "");
-        showScreen('screen-edit');
-    }
-
-    function openEditorFor(data) {
-        document.getElementById('edit-title').innerText = "Правка: " + data.name;
-        document.getElementById('e-name').value = data.name;
-        document.getElementById('e-year').value = data.year;
-        document.getElementById('e-bio').value = data.bio;
-        document.getElementById('e-disco').value = data.disco;
-        document.getElementById('e-lyrics').value = data.lyrics;
-        document.getElementById('e-g1-t').value = data.g1t || "";
-        document.getElementById('e-g2-t').value = data.g2t || "";
-        showScreen('screen-edit');
     }
 
     function showScreen(id) {
         document.querySelectorAll('.container > div').forEach(s => s.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
+    }
+
+    function openNewEditor() {
+        tempMedia = {};
+        document.querySelectorAll('input, textarea').forEach(i => i.value = "");
+        showScreen('screen-edit');
     }
 
     function switchTab(id, el) {
