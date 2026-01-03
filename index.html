@@ -3,215 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLE7 Rock Cloud - Final Edition</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+    <title>PLE7 ROCK CLOUD</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glass: rgba(255, 255, 255, 0.4); --bg: radial-gradient(circle at top left, #4facfe 0%, #00f2fe 100%); }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); background-attachment: fixed; margin: 0; padding: 20px; display: flex; justify-content: center; color: #003366; }
-        .container { width: 100%; max-width: 900px; background: var(--glass); backdrop-filter: blur(25px); border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.5); padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-        
-        /* Кнопки в стиле Aero */
-        .btn { background: linear-gradient(to bottom, #ffffff 0%, #cedbe9 100%); color: #003366; border: 1px solid #707070; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0,168,255,0.3); }
-        .btn-main { background: linear-gradient(to bottom, #87e8fb 0%, #1ea1d7 100%); color: white; border-color: #1e70a1; }
-        .btn-danger { background: linear-gradient(to bottom, #ff9999 0%, #cc0000 100%); color: white; border-color: #990000; }
+        :root {
+            --glass: rgba(255, 255, 255, 0.25);
+            --border: rgba(255, 255, 255, 0.4);
+        }
 
-        .hidden { display: none !important; }
-        input, textarea { width: 100%; background: rgba(255,255,255,0.8); border: 1px solid #ccc; padding: 12px; border-radius: 10px; margin-bottom: 10px; box-sizing: border-box; font-size: 14px; }
-        
-        .band-card { background: rgba(255,255,255,0.5); padding: 15px; border-radius: 15px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid white; transition: 0.3s; }
-        .band-card:hover { background: white; transform: translateX(5px); }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #1d1d1f;
+        }
 
-        /* Вкладки */
-        .tabs { display: flex; gap: 5px; margin: 20px 0; }
-        .tab { padding: 10px 20px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 10px 10px 0 0; border: 1px solid rgba(255,255,255,0.2); }
-        .tab.active { background: white; font-weight: bold; border-bottom: none; }
+        #app-container {
+            width: 95%;
+            max-width: 900px;
+            height: 90vh;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-        .header-flex { display: flex; gap: 20px; align-items: center; margin-top: 20px; }
-        #v-img-main { width: 180px; height: 180px; border-radius: 20px; object-fit: contain; background: #fff; border: 5px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .view-area { background: rgba(255,255,255,0.6); padding: 25px; border-radius: 25px; line-height: 1.6; white-space: pre-wrap; min-height: 200px; border: 1px solid white; }
+        header {
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .screen { display: none; flex: 1; overflow-y: auto; padding: 25px; }
+        .active { display: block; }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn:active { transform: scale(0.95); }
+        .btn-main { background: white; color: #333; }
+        .btn-add { background: linear-gradient(135deg, #0071bc, #29abe2); color: white; }
+        .btn-save { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; width: 100%; margin-top: 20px; }
+        .btn-delete { background: #ff4b2b; color: white; padding: 8px 15px; font-size: 0.85em; }
+
+        /* Cards */
+        .band-card {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: 0.3s;
+        }
+
+        .band-card:hover { background: white; transform: translateX(10px); }
+        .band-thumb { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; }
+
+        /* Detail View */
+        .detail-header { display: flex; flex-wrap: wrap; gap: 25px; margin-bottom: 30px; }
+        .detail-img { width: 220px; height: 220px; border-radius: 25px; object-fit: cover; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
         
-        .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .gal-card { background: white; padding: 10px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .gal-card img { width: 100%; height: 200px; object-fit: contain; border-radius: 10px; background: #f9f9f9; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 15px; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; border-radius: 10px; transition: 0.2s; font-size: 0.9em; }
+        .tab.active-tab { background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-weight: bold; }
+
+        audio { width: 100%; margin-top: 15px; height: 45px; border-radius: 30px; }
+
+        input, textarea {
+            width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); 
+            background: rgba(255,255,255,0.7); font-family: inherit;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="screen-list">
-        <h1 style="text-align:center; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.2);">🌊 PLE7 ROCK CLOUD</h1>
-        <div style="text-align:center; margin-bottom: 25px;">
-            <button class="btn btn-main" onclick="openNewEditor()">➕ Добавить в архив</button>
-        </div>
-        <div id="bands-container">Синхронизация с облаком...</div>
+<div id="app-container">
+    <header>
+        <h2 style="margin:0; font-weight: 800; color: #004e92; letter-spacing: -1px;">ROCK CLOUD</h2>
+        <button class="btn btn-add" onclick="openNewEditor()"><i class="fas fa-plus"></i> Добавить</button>
+    </header>
+
+    <div id="screen-list" class="screen active">
+        <div id="bands-container">Загрузка архива...</div>
     </div>
 
-    <div id="screen-view" class="hidden">
-        <div style="display:flex; justify-content: space-between; align-items: center;">
-            <button class="btn" onclick="showScreen('screen-list')">↩ Назад</button>
-            <button class="btn btn-danger" id="delete-btn">🗑 Удалить группу</button>
-        </div>
-        <div class="header-flex">
-            <img id="v-img-main" src="">
-            <div style="flex:1">
-                <h1 id="v-name" style="margin:0; color:#004488;"></h1>
-                <p id="v-year" style="font-size: 1.1em; color: #555;"></p>
-                <audio id="v-audio" controls style="width:100%; margin-top:10px;"></audio>
-            </div>
-        </div>
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('v-bio', this)">История</div>
-            <div class="tab" onclick="switchTab('v-disco', this)">Дискография</div>
-            <div class="tab" onclick="switchTab('v-lyrics', this)">Тексты</div>
-            <div class="tab" onclick="switchTab('v-gal', this)">Галерея</div>
-        </div>
-        <div id="v-bio" class="view-area tab-content"></div>
-        <div id="v-disco" class="view-area tab-content hidden"></div>
-        <div id="v-lyrics" class="view-area tab-content hidden"></div>
-        <div id="v-gal" class="tab-content hidden"><div id="v-gallery-grid" class="gallery-grid"></div></div>
-    </div>
-
-    <div id="screen-edit" class="hidden">
-        <h2 style="color:white; text-shadow: 0 1px 3px rgba(0,0,0,0.2);">Новая запись</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-            <div>
-                <input type="text" id="e-name" placeholder="Название группы">
-                <input type="text" id="e-year" placeholder="Год основания / Город">
-                <label>Главное фото:</label><input type="file" onchange="encodeMedia(this, 'img')">
-                <label>Песня (MP3):</label><input type="file" onchange="encodeMedia(this, 'audio')">
-            </div>
-            <div style="background:rgba(255,255,255,0.2); padding:15px; border-radius:15px; border: 1px solid white;">
-                <label>Фото галереи 1:</label><input type="file" onchange="encodeMedia(this, 'g1')">
-                <input type="text" id="e-g1-t" placeholder="Подпись к фото 1">
-                <label>Фото галереи 2:</label><input type="file" onchange="encodeMedia(this, 'g2')">
-                <input type="text" id="e-g2-t" placeholder="Подпись к фото 2">
-            </div>
-        </div>
-        <textarea id="e-bio" rows="4" placeholder="Биография группы..."></textarea>
-        <textarea id="e-disco" rows="2" placeholder="Список альбомов..."></textarea>
-        <textarea id="e-lyrics" rows="2" placeholder="Тексты популярных песен..."></textarea>
+    <div id="screen-edit" class="screen">
+        <button class="btn btn-main" onclick="showScreen('screen-list')">← Назад</button>
+        <h3>Новая запись</h3>
+        <input type="text" id="e-name" placeholder="Название группы">
+        <input type="text" id="e-year" placeholder="Жанр и Год (например: Thrash Metal, 1997)">
+        <textarea id="e-history" rows="4" placeholder="История (Must have для фанов Annihilator...)"></textarea>
+        <textarea id="e-disco" rows="2" placeholder="Дискография (Альбомы)"></textarea>
+        <textarea id="e-lyrics" rows="2" placeholder="Тексты"></textarea>
         
-        <button class="btn btn-main" style="width:100%; margin-top:10px; padding: 15px;" id="save-btn" onclick="saveData()">☁ СОХРАНИТЬ В ОБЛАКО</button>
-        <button class="btn" style="width:100%; margin-top:10px;" onclick="showScreen('screen-list')">Отмена</button>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
+            <label class="btn btn-main" style="justify-content:center;">🖼️ Фото<input type="file" hidden onchange="encodeMedia(this, 'img')"></label>
+            <label class="btn btn-main" style="justify-content:center;">🎵 Аудио<input type="file" hidden onchange="encodeMedia(this, 'audio')"></label>
+        </div>
+        <button class="btn btn-save" onclick="saveData()" id="save-btn">СОХРАНИТЬ В ОБЛАКО</button>
+    </div>
+
+    <div id="screen-view" class="screen">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <button class="btn btn-main" onclick="showScreen('screen-list')">← К списку</button>
+            <div id="admin-tools"></div>
+        </div>
+        <div id="view-content"></div>
     </div>
 </div>
 
 <script>
-    // ТВОИ ДАННЫЕ FIREBASE
+    // КОНФИГ
     const firebaseConfig = {
-        apiKey: "AIzaSyCCMz8l4I6c6TKTiR4jGsmIjrKtyQdWIno",
-        authDomain: "ple7-edit-v1.firebaseapp.com",
-        databaseURL: "https://ple7-edit-v1-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "ple7-edit-v1",
-        storageBucket: "ple7-edit-v1.firebasestorage.app",
-        messagingSenderId: "779852816376",
-        appId: "1:779852816376:web:be6b45d7e2290f7192000d"
+        databaseURL: "https://ple7-frts-try-default-rtdb.europe-west1.firebasedatabase.app/"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let tempMedia = {};
-    let currentBandId = null;
+    
+    // ПАРОЛЬ
+    const ADMIN_PASS = "immaimdhiesyf";
 
-    function loadBands() {
-        db.ref('bands').on('value', (snap) => {
-            const container = document.getElementById('bands-container');
-            container.innerHTML = "";
-            const data = snap.val();
-            if (!data) { container.innerHTML = "<p style='text-align:center; color:white;'>Облако пусто. Добавьте первую группу!</p>"; return; }
-            for (let id in data) {
-                let card = document.createElement('div');
-                card.className = 'band-card';
-                card.innerHTML = `<b>${data[id].name}</b> <span>▶</span>`;
-                card.onclick = () => showBand(id, data[id]);
-                container.appendChild(card);
-            }
+    let tempMedia = {};
+
+    // Загрузка
+    db.ref('bands').on('value', (snap) => {
+        const container = document.getElementById('bands-container');
+        container.innerHTML = "";
+        const data = snap.val();
+        if(!data) { container.innerHTML = "Архив пуст"; return; }
+        
+        for (let id in data) {
+            const b = data[id];
+            container.innerHTML += `
+                <div class="band-card" onclick="viewBand('${id}')">
+                    <img src="${b.img || 'https://via.placeholder.com/80'}" class="band-thumb">
+                    <div>
+                        <strong style="font-size:1.2em; display:block;">${b.name}</strong>
+                        <span style="color: #555; font-size:0.9em;">${b.year || ''}</span>
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    // Проверка пароля при входе
+    function openNewEditor() {
+        if (prompt("Введите пароль администратора:") === ADMIN_PASS) {
+            tempMedia = {};
+            document.querySelectorAll('#screen-edit input, #screen-edit textarea').forEach(i => i.value = "");
+            showScreen('screen-edit');
+        } else { alert("Доступ закрыт"); }
+    }
+
+    function viewBand(id) {
+        db.ref('bands/' + id).once('value', (snap) => {
+            const b = snap.val();
+            const container = document.getElementById('view-content');
+            document.getElementById('admin-tools').innerHTML = `
+                <button class="btn btn-delete" onclick="deleteThisBand('${id}')"><i class="fas fa-trash"></i> Удалить</button>
+            `;
+
+            container.innerHTML = `
+                <div class="detail-header">
+                    <img src="${b.img || ''}" class="detail-img">
+                    <div style="flex:1; min-width: 250px;">
+                        <h1 style="margin:0; color: #004e92; font-size: 2.5em;">${b.name}</h1>
+                        <p style="color: #666; font-weight: 600;">${b.year}</p>
+                        ${b.audio ? `<audio controls src="${b.audio}"></audio>` : '<p style="opacity:0.5"><i>Аудио отсутствует</i></p>'}
+                    </div>
+                </div>
+                <div class="tabs">
+                    <div class="tab active-tab" onclick="switchTab(this, 'history')">История</div>
+                    <div class="tab" onclick="switchTab(this, 'disco')">Дискография</div>
+                    <div class="tab" onclick="switchTab(this, 'lyrics')">Тексты</div>
+                </div>
+                <div id="tab-content" style="background: rgba(255,255,255,0.5); padding: 25px; border-radius: 20px; white-space: pre-wrap;">${b.history}</div>
+            `;
+            window.currentBandData = b;
+            showScreen('screen-view');
         });
     }
 
-    function encodeMedia(input, key) {
-        if (!input.files[0]) return;
+    function switchTab(el, type) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active-tab'));
+        el.classList.add('active-tab');
+        const b = window.currentBandData;
+        document.getElementById('tab-content').innerText = b[type] || "Информация отсутствует";
+    }
+
+    function encodeMedia(input, type) {
         const reader = new FileReader();
-        reader.onloadend = () => tempMedia[key] = reader.result;
+        reader.onloadend = () => { tempMedia[type] = reader.result; };
         reader.readAsDataURL(input.files[0]);
     }
 
     function saveData() {
-        const name = document.getElementById('e-name').value;
-        if (!name) return alert("Введите название группы!");
-        
         const btn = document.getElementById('save-btn');
-        btn.disabled = true; btn.innerText = "Загрузка в облако...";
+        btn.innerText = "СИНХРОНИЗАЦИЯ...";
+        btn.disabled = true;
 
-        const bandData = {
-            name: name,
+        const data = {
+            name: document.getElementById('e-name').value,
             year: document.getElementById('e-year').value,
-            bio: document.getElementById('e-bio').value,
+            history: document.getElementById('e-history').value,
             disco: document.getElementById('e-disco').value,
             lyrics: document.getElementById('e-lyrics').value,
             img: tempMedia.img || "",
-            audio: tempMedia.audio || "",
-            g1: tempMedia.g1 || "", g1t: document.getElementById('e-g1-t').value,
-            g2: tempMedia.g2 || "", g2t: document.getElementById('e-g2-t').value
+            audio: tempMedia.audio || ""
         };
 
-        db.ref('bands').push(bandData).then(() => {
-            btn.disabled = false; btn.innerText = "☁ СОХРАНИТЬ В ОБЛАКО";
+        db.ref('bands').push(data).then(() => {
+            btn.innerText = "СОХРАНИТЬ В ОБЛАКО";
+            btn.disabled = false;
             showScreen('screen-list');
-            tempMedia = {};
-        });
-    }
-
-    function showBand(id, data) {
-        currentBandId = id;
-        document.getElementById('v-name').innerText = data.name;
-        document.getElementById('v-year').innerText = data.year || "";
-        document.getElementById('v-bio').innerText = data.bio || "Биография не добавлена.";
-        document.getElementById('v-disco').innerText = data.disco || "Список альбомов пуст.";
-        document.getElementById('v-lyrics').innerText = data.lyrics || "Тексты песен отсутствуют.";
-        document.getElementById('v-img-main').src = data.img || "";
-        document.getElementById('v-audio').src = data.audio || "";
-        
-        const grid = document.getElementById('v-gallery-grid');
-        grid.innerHTML = "";
-        if(data.g1) grid.innerHTML += `<div class="gal-card"><img src="${data.g1}"><p>${data.g1t || ""}</p></div>`;
-        if(data.g2) grid.innerHTML += `<div class="gal-card"><img src="${data.g2}"><p>${data.g2t || ""}</p></div>`;
-        
-        document.getElementById('delete-btn').onclick = () => deleteThisBand(id);
-        showScreen('screen-view');
-        switchTab('v-bio', document.querySelector('.tab'));
+        }).catch(e => { alert("Ошибка!"); btn.disabled = false; });
     }
 
     function deleteThisBand(id) {
-        if (confirm("Удалить эту группу из облачного архива навсегда?")) {
-            db.ref('bands/' + id).remove().then(() => showScreen('screen-list'));
-        }
+        if (prompt("Введите пароль для удаления:") === ADMIN_PASS) {
+            if (confirm("Удалить безвозвратно?")) {
+                db.ref('bands/' + id).remove().then(() => showScreen('screen-list'));
+            }
+        } else { alert("Отказ"); }
     }
-
-    function openNewEditor() {
-        tempMedia = {};
-        document.querySelectorAll('#screen-edit input, #screen-edit textarea').forEach(i => i.value = "");
-        showScreen('screen-edit');
-    }
-
-    function showScreen(id) {
-        document.querySelectorAll('.container > div').forEach(s => s.classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-        window.scrollTo(0,0);
-    }
-
-    function switchTab(id, el) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).classList.remove('hidden');
-        el.classList.add('active');
-    }
-
-    loadBands();
 </script>
 </body>
 </html>
